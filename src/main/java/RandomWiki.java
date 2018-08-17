@@ -12,12 +12,12 @@ public class RandomWiki implements Closeable {
     private HttpURLConnection conn;
 
     public RandomWiki() throws IOException {
-        getRandomPage();
+        loadRandomPage();
     }
 
     public void refresh() throws IOException {
         this.close();
-        this.getRandomPage();
+        this.loadRandomPage();
     }
 
     public void close() throws IOException {
@@ -27,7 +27,7 @@ public class RandomWiki implements Closeable {
         conn = null;
     }
 
-    private void getRandomPage() throws IOException {
+    private void loadRandomPage() throws IOException {
         assert page == null;
         assert conn == null;
         conn = (HttpURLConnection) new URL(RANDOM_URL).openConnection();
@@ -36,11 +36,16 @@ public class RandomWiki implements Closeable {
         page = conn.getInputStream();
     }
 
-    public InputStream getPage(){
+    public InputStream getPage() {
         return this.page;
     }
 
-    HttpURLConnection getConn(){
+    public String getURI() {
+        return this.conn.getURL().toString();
+    }
+
+    HttpURLConnection getConn() {
         return this.conn;
     }
+
 }

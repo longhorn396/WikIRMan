@@ -1,4 +1,6 @@
+# IntelliJ files
 .idea
-target/
 *.iml
-*.class
+# generated files
+target/
+

@@ -13,7 +13,8 @@ public class TestRandomWiki {
         Assert.assertNotNull(rw);
         Assert.assertNotNull(rw.getPage());
         Assert.assertNotNull(rw.getConn());
-        Assert.assertNotEquals(RandomWiki.RANDOM_URL, rw.getConn().getURL().toString());
+        Assert.assertEquals(rw.getURI(), rw.getConn().getURL().toString());
+        Assert.assertNotEquals(RandomWiki.RANDOM_URL, rw.getURI());
         closeRandomWiki(rw);
     }
 
@@ -34,7 +35,7 @@ public class TestRandomWiki {
         closeRandomWiki(rw);
     }
 
-    private RandomWiki getNewRandomWiki(){
+    private RandomWiki getNewRandomWiki() {
         RandomWiki rw = null;
         try {
             rw = new RandomWiki();
@@ -46,7 +47,7 @@ public class TestRandomWiki {
         return rw;
     }
 
-    private void closeRandomWiki(RandomWiki rw){
+    private void closeRandomWiki(RandomWiki rw) {
         try {
             rw.close();
         } catch (IOException e) {
@@ -54,4 +55,5 @@ public class TestRandomWiki {
             Assert.fail("Closing RandomWiki failed");
         }
     }
+
 }
