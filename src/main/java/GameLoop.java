@@ -60,18 +60,11 @@ public class GameLoop {
             } else {
                 System.out.println("\nYou lost on the word " + wordToGuess + ". Better luck next time!");
             }
-            //Decide if game over or not
             System.out.println("Play again? [y for yes n for no]");
-            String next = input.nextLine();
-            char c;
-            if (next.length() == 0) {
-                c = '\n';
-            } else {
-                c = next.charAt(0);
-            }
-            if (c == 'y') {
+            char nextChar = getNextChar();
+            if (nextChar == 'y') {
                 reset();
-            } else if (c == 'n') {
+            } else if (nextChar == 'n') {
                 break;
             } else {
                 System.out.println("I'll just assume that was a yes. \nWhy would you ever want to stop playing this game?");
@@ -81,58 +74,69 @@ public class GameLoop {
     }
 
     private boolean playRound() {
+        boolean hintShown = false;
         char [] slots = new char[wordToGuess.length()];
-        boolean shown = false;
         int positionsLeft = slots.length;
-        char in;
-        for(int k = 0; k < slots.length; k++) {
-            slots[k] = '_';
+        char nextChar;
+        for(int i = 0; i < slots.length; i++) {
+            slots[i] = '_';
         }
         oo.show_round_info(slots, maxGuesses + 1);
-        for(int guess = maxGuesses; guess > 0; guess--){
-            System.out.println("Guesses left: " + guess);
-            if(!shown && (maxGuesses - guess == hintOnTurn)) {
-                System.out.println("Showing hint...");
-                try {
-                    showHint();
-                } catch (URISyntaxException | IOException e) {
-                    System.out.println("There was a problem showing the hint.");
+        for(int guessesLeft = maxGuesses; guessesLeft > 0; guessesLeft--){
+            System.out.println("Guesses left: " + guessesLeft);
+            if(!hintShown && (maxGuesses - guessesLeft == hintOnTurn)) {
+                showHint();
+                hintShown = true;
+            }
+            if(makeGuess((nextChar = getNextChar()))){
+                guessesLeft++;
+                List<Integer> list = positions.get(nextChar);
+                if(list != null) {
+                    positionsLeft -= list.size();
+                    for (Integer j : list) {
+                        slots[j] = nextChar;
+                    }
+                    positions.remove(nextChar);
                 }
-                shown = true;
             }
-            //Process key inputs
-            String next = input.nextLine().toLowerCase();
-            if(next.length() > 0) {
-                in = next.charAt(0);
-            } else {
-                in = '\n';
-            }
-            if(guesses.contains(in)) {
-                guess++;
-                System.out.println("You've already guessed this character!");
-            } else if(positions.containsKey(in)) {
-                guess++;
-                guesses.add(in);
-                List<Integer> arr = positions.get(in);
-                positionsLeft -= arr.size();
-                for(Integer j : arr) {
-                    slots[j] = in;
-                }
-            } else {
-                guesses.add(in);
-                System.out.println("Wrong guess!");
-            }
+            oo.show_round_info(slots, guessesLeft);
             if(positionsLeft <= 0) {
                 return true;
             }
-            oo.show_round_info(slots, guess);
         }
         return false;
     }
 
-    private void showHint() throws URISyntaxException, IOException {
-        if(Desktop.isDesktopSupported()) {
-            Desktop.getDesktop().browse(new URI(rw.getURI()));
+    private void showHint() {
+        System.out.println("Showing hint...");
+        try {
+            if(Desktop.isDesktopSupported()) {
+                Desktop.getDesktop().browse(new URI(rw.getURI()));
+            }
+        } catch (URISyntaxException | IOException e) {
+            System.out.println("There was a problem showing the hint.");
+        }
+    }
+
+    private boolean makeGuess(char nextChar) {
+        if(guesses.add(nextChar)) {
+            if (!positions.containsKey(nextChar)) {
+                System.out.println("Wrong guess!");
+                return false;
+            }
+        } else {
+            assert positions.get(nextChar) == null;
+            System.out.println("You've already guessed this character!");
+        }
+        return true;
+    }
+
+    private char getNextChar() {
+        String next = input.nextLine().toLowerCase();
+        if(next.length() > 0) {
+            return next.charAt(0);
+        } else {
+            return '\n';
         }
     }
 
@@ -141,7 +145,7 @@ public class GameLoop {
             rw.refresh();
         } catch (IOException e) {
             e.printStackTrace();
-            System.exit(1);
+            System.exit(-1);
         }
         wordToGuess = RandomWordExtractor.extract(rw.getPage(), rw.getURI(), eo);
         guesses.clear();
@@ -156,6 +160,10 @@ public class GameLoop {
         }
         input.close();
         System.exit(0);
+    }
+
+    public static void main(String[] args) {
+        new GameLoop(ExtractorOptions.INFO_TABLE, OutputOptions.TERM_TEXT, 7, 0);
     }
 
 }
