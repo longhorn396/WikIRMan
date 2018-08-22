@@ -11,8 +11,13 @@ public class RandomWiki implements Closeable {
     private InputStream page;
     private HttpURLConnection conn;
 
-    public RandomWiki() throws IOException {
-        loadRandomPage();
+    public RandomWiki() {
+        try {
+            loadRandomPage();
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
     }
 
     public void refresh() throws IOException {

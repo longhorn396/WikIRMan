@@ -9,7 +9,7 @@ public class TestRandomWiki {
 
     @Test()
     public void testRandomWiki() {
-        RandomWiki rw = getNewRandomWiki();
+        RandomWiki rw = new RandomWiki();
         Assert.assertNotNull(rw);
         Assert.assertNotNull(rw.getPage());
         Assert.assertNotNull(rw.getConn());
@@ -20,7 +20,7 @@ public class TestRandomWiki {
 
     @Test
     public void testRandomWikiRefresh() {
-        RandomWiki rw = getNewRandomWiki();
+        RandomWiki rw = new RandomWiki();
         InputStream page = rw.getPage();
         HttpURLConnection conn = rw.getConn();
         String url = rw.getConn().getURL().toString();
@@ -33,18 +33,6 @@ public class TestRandomWiki {
         Assert.assertNotEquals(conn, rw.getConn());
         Assert.assertNotEquals(url, rw.getConn().getURL().toString());
         closeRandomWiki(rw);
-    }
-
-    private RandomWiki getNewRandomWiki() {
-        RandomWiki rw = null;
-        try {
-            rw = new RandomWiki();
-        } catch (IOException ioe) {
-            closeRandomWiki(rw);
-            ioe.printStackTrace();
-            Assert.fail("RandomWiki constructor threw IOException");
-        }
-        return rw;
     }
 
     private void closeRandomWiki(RandomWiki rw) {

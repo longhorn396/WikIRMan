@@ -10,8 +10,14 @@ import java.util.stream.Collectors;
 
 public class RandomWordExtractor {
 
-    public static String extract(InputStream in, String baseURI, ExtractorOptions eo) throws IOException {
-        Document doc = Jsoup.parse(in, null, baseURI);
+    public static String extract(InputStream in, String baseURI, ExtractorOptions eo) {
+        Document doc = null;
+        try {
+            doc = Jsoup.parse(in, null, baseURI);
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
         Elements terms = null;
         switch (eo) {
             case BODY:
@@ -23,7 +29,7 @@ public class RandomWordExtractor {
         }
         List<String> words = Arrays.asList(terms.text().split("\\b"));
         words = words.stream().filter(word -> word.length() > 5).collect(Collectors.toList());
-        return words.get((int) Math.floor(Math.random() * words.size()));
+        return words.get((int) Math.floor(Math.random() * words.size())).toLowerCase();
     }
 
 }

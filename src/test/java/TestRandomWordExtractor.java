@@ -20,7 +20,7 @@ public class TestRandomWordExtractor {
         String word = null;
         InputStream stream = null;
         try {
-            word = testExtract((stream = new ByteArrayInputStream(html.getBytes(StandardCharsets.UTF_8.name()))), ExtractorOptions.BODY);
+            word = RandomWordExtractor.extract((stream = new ByteArrayInputStream(html.getBytes(StandardCharsets.UTF_8.name()))), "", ExtractorOptions.BODY);
         } catch (IOException e) {
             Assert.fail("UnsupportedEncodingException thrown");
         }
@@ -34,23 +34,13 @@ public class TestRandomWordExtractor {
         String word = null;
         InputStream stream = null;
         try {
-            word = testExtract((stream = new ByteArrayInputStream(html.getBytes(StandardCharsets.UTF_8.name()))), ExtractorOptions.INFO_TABLE);
+            word = RandomWordExtractor.extract((stream = new ByteArrayInputStream(html.getBytes(StandardCharsets.UTF_8.name()))), "", ExtractorOptions.INFO_TABLE);
         } catch (UnsupportedEncodingException e) {
             Assert.fail("UnsupportedEncodingException thrown");
         }
         Assert.assertTrue("Wrong word extracted from info", INFO.contains(word) && !BODY.contains(word));
         Assert.assertTrue("Word too long", word.length() > 5);
         closeStream(stream, "Failed to close stream from info");
-    }
-
-    private String testExtract(InputStream stream, ExtractorOptions eo) {
-        try {
-            return RandomWordExtractor.extract(stream, "", eo);
-        } catch (IOException ioe) {
-            closeStream(stream,"Word extraction failed and input stream failed to close");
-        }
-        Assert.fail("Word extraction failed");
-        return null;
     }
 
     private void closeStream(InputStream stream, String msg) {
