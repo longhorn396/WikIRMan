@@ -16,7 +16,7 @@ public class RandomWordExtractor {
             doc = Jsoup.parse(in, null, baseURI);
         } catch (IOException e) {
             e.printStackTrace();
-            System.exit(1);
+            System.exit(-1);
         }
         Elements terms = null;
         switch (eo) {
@@ -28,9 +28,9 @@ public class RandomWordExtractor {
                 break;
         }
         List<String> words = Arrays.asList(terms.text().split("\\b"));
-        words = words.stream().filter(word -> word.length() > 5).collect(Collectors.toList());
+        words = words.stream().map(String::toLowerCase).filter(word -> word.length() > 5 && word.matches("[a-z]+?")).collect(Collectors.toList());
         if (words.size() > 0) {
-            return words.get((int) Math.floor(Math.random() * words.size())).toLowerCase();
+            return words.get((int) Math.floor(Math.random() * words.size()));
         }
         return null;
     }
