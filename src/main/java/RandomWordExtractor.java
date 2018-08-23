@@ -29,7 +29,10 @@ public class RandomWordExtractor {
         }
         List<String> words = Arrays.asList(terms.text().split("\\b"));
         words = words.stream().filter(word -> word.length() > 5).collect(Collectors.toList());
-        return words.get((int) Math.floor(Math.random() * words.size())).toLowerCase();
+        if (words.size() > 0) {
+            return words.get((int) Math.floor(Math.random() * words.size())).toLowerCase();
+        }
+        return null;
     }
 
 }

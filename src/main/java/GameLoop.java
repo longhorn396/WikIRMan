@@ -27,7 +27,8 @@ public class GameLoop {
 
     public GameLoop(ExtractorOptions eo, OutputOptions oo, int maxGuesses, int hintOnTurn) {
         rw = new RandomWiki();
-        wordToGuess = RandomWordExtractor.extract(rw.getPage(), rw.getURI(), (this.eo = eo));
+        this.eo = eo;
+        wordToGuess = extract();
         input = new Scanner(System.in);
         guesses = new TreeSet<>();
         this.oo = oo;
@@ -35,6 +36,24 @@ public class GameLoop {
         this.hintOnTurn = hintOnTurn;
         loadPositions();
         playGame();
+    }
+
+    private String extract() {
+        for(int i = 0; i < 5; i++) {
+            String word = RandomWordExtractor.extract(rw.getPage(), rw.getURI(), eo);
+            if (word != null)
+                return word;
+            try {
+                rw.refresh();
+            } catch (IOException e) {
+                e.printStackTrace();
+                System.out.println("Extraction failed: couldn't refresh");
+                System.exit(-1);
+            }
+        }
+        System.out.println("Extraction failed: too many retries");
+        System.exit(-1);
+        return null;
     }
 
     private void loadPositions() {
