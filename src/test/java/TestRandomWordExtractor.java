@@ -17,46 +17,37 @@ public class TestRandomWordExtractor {
 
     @Test
     public void testRandomExtractFromBody() {
-        String word = null;
-        InputStream stream = null;
-        try {
-            word = RandomWordExtractor.extract((stream = new ByteArrayInputStream(HTML.getBytes(StandardCharsets.UTF_8.name()))), "", ExtractorOptions.BODY);
-        } catch (IOException e) {
-            Assert.fail("UnsupportedEncodingException thrown");
-        }
+        String word = testRandomExtract(HTML, ExtractorOptions.BODY, "body");
         Assert.assertTrue("Wrong word extracted from body", BODY.toLowerCase().contains(word) || INFO.toLowerCase().contains(word));
         Assert.assertTrue("Word too long", word.length() > 5);
         Assert.assertEquals("Not lower case", word, word.toLowerCase());
-        closeStream(stream, "Failed to close stream from body");
     }
 
     @Test
     public void testRandomExtractFromInfo() {
-        String word = null;
-        InputStream stream = null;
-        try {
-            word = RandomWordExtractor.extract((stream = new ByteArrayInputStream(HTML.getBytes(StandardCharsets.UTF_8.name()))), "", ExtractorOptions.INFO_TABLE);
-        } catch (UnsupportedEncodingException e) {
-            Assert.fail("UnsupportedEncodingException thrown");
-        }
+        String word = testRandomExtract(HTML, ExtractorOptions.INFO_TABLE, "info");
         Assert.assertTrue("Wrong word extracted from info", INFO.toLowerCase().contains(word) && !BODY.toLowerCase().contains(word));
         Assert.assertTrue("Word too long", word.length() > 5);
         Assert.assertEquals("Not lower case", word, word.toLowerCase());
-        closeStream(stream, "Failed to close stream from info");
     }
 
     @Test
     public void testRandomExtractIsTypable() {
+        String others = "<html><body>célèbre c’est chef-d’œuvre grâce doppelgänger résistance</body></html>";
+        String word = testRandomExtract(others, ExtractorOptions.BODY, "typable");
+        Assert.assertNull("", word);
+    }
+
+    private String testRandomExtract(String from, ExtractorOptions eo, String msg) {
         String word = null;
         InputStream stream = null;
         try {
-            String others = "<html><body>célèbre c’est chef-d’œuvre grâce doppelgänger résistance</body></html>";
-            word = RandomWordExtractor.extract((stream = new ByteArrayInputStream(others.getBytes(StandardCharsets.UTF_8.name()))), "", ExtractorOptions.BODY);
+            word = RandomWordExtractor.extract((stream = new ByteArrayInputStream(from.getBytes(StandardCharsets.UTF_8.name()))), "", eo);
         } catch (IOException e) {
             Assert.fail("UnsupportedEncodingException thrown");
         }
-        Assert.assertNull("", word);
-        closeStream(stream, "Failed to close stream from Typable");
+        closeStream(stream, String.format("Failed to close stream from %s", msg));
+        return word;
     }
 
     private void closeStream(InputStream stream, String msg) {
