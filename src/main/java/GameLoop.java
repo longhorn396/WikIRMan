@@ -80,7 +80,7 @@ public class GameLoop {
                 System.out.println("\nYou lost on the word " + wordToGuess + ". Better luck next time!");
             }
             System.out.println("Play again? [y for yes n for no]");
-            char nextChar = getNextChar();
+            char nextChar = getNext().charAt(0);
             if (nextChar == 'y') {
                 reset();
             } else if (nextChar == 'n') {
@@ -96,26 +96,29 @@ public class GameLoop {
         boolean hintShown = false;
         char [] slots = new char[wordToGuess.length()];
         int positionsLeft = slots.length;
-        char nextChar;
-        for(int i = 0; i < slots.length; i++) {
+        for (int i = 0; i < slots.length; i++) {
             slots[i] = '_';
         }
         oo.show_round_info(slots, maxGuesses + 1);
-        for(int guessesLeft = maxGuesses; guessesLeft > 0; guessesLeft--){
+        int guessesLeft = maxGuesses;
+        while (guessesLeft > 0){
             System.out.println("Guesses left: " + guessesLeft);
-            if(!hintShown && (maxGuesses - guessesLeft == hintOnTurn)) {
+            if (!hintShown && (maxGuesses - guessesLeft == hintOnTurn)) {
                 showHint();
                 hintShown = true;
             }
-            if(makeGuess((nextChar = getNextChar()))){
-                guessesLeft++;
-                List<Integer> list = positions.get(nextChar);
-                if(list != null) {
-                    positionsLeft -= list.size();
-                    for (Integer j : list) {
-                        slots[j] = nextChar;
+            for (char nextChar : getNext().toCharArray()) {
+                if (makeGuess(nextChar)) {
+                    List<Integer> list = positions.get(nextChar);
+                    if(list != null) {
+                        positionsLeft -= list.size();
+                        for (Integer j : list) {
+                            slots[j] = nextChar;
+                        }
+                        positions.remove(nextChar);
                     }
-                    positions.remove(nextChar);
+                } else {
+                    guessesLeft--;
                 }
             }
             oo.show_round_info(slots, guessesLeft);
@@ -150,12 +153,12 @@ public class GameLoop {
         return true;
     }
 
-    private char getNextChar() {
+    private String getNext() {
         String next = input.nextLine().toLowerCase();
         if(next.length() > 0) {
-            return next.charAt(0);
+            return next;
         } else {
-            return '\n';
+            return "\n";
         }
     }
 
