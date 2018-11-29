@@ -8,8 +8,19 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * Utility class to extract a random word from a document using Jsoup.
+ */
 public class RandomWordExtractor {
 
+    /**
+     * Utility method to extract a random word from a document using Jsoup.
+     *
+     * @param in      the InputStream for the document
+     * @param baseURI URI used by Jsoup to resolve links
+     * @param eo      ExtractorOptions enum
+     * @return random string of alphabetic characters from the document or null
+     */
     public static String extract(InputStream in, String baseURI, ExtractorOptions eo) {
         Document doc = null;
         try {

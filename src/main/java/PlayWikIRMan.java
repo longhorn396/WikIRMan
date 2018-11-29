@@ -1,5 +1,8 @@
 import org.apache.commons.cli.*;
 
+/**
+ * Command line runner class
+ */
 public class PlayWikIRMan {
 
     public static void main(String[] args) {
@@ -16,7 +19,7 @@ public class PlayWikIRMan {
             cmd = new DefaultParser().parse( options, args);
         } catch (ParseException e) {
             e.printStackTrace();
-            System.out.println("Error parsing command line arguments");
+            System.err.println("Error parsing command line arguments");
             System.exit(-1);
         }
         if (cmd.hasOption("help")) {

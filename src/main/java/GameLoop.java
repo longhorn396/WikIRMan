@@ -5,6 +5,9 @@ import java.net.URISyntaxException;
 import java.util.*;
 import java.util.List;
 
+/**
+ * Class that runs a game of Hangman
+ */
 public class GameLoop {
 
     private RandomWiki rw;
@@ -25,6 +28,14 @@ public class GameLoop {
 
     private int hintOnTurn;
 
+    /**
+     * Creates and runs a game of potentially infinite rounds
+     *
+     * @param eo         ExtractorOptions enum
+     * @param oo         OutputOptions enum
+     * @param maxGuesses the maximum number of guesses per game
+     * @param hintOnTurn the turn on which to display the hint (set greater than maxGuesses to disable hints)
+     */
     public GameLoop(ExtractorOptions eo, OutputOptions oo, int maxGuesses, int hintOnTurn) {
         rw = new RandomWiki();
         this.eo = eo;
@@ -47,11 +58,11 @@ public class GameLoop {
                 rw.refresh();
             } catch (IOException e) {
                 e.printStackTrace();
-                System.out.println("Extraction failed: couldn't refresh");
+                System.err.println("Extraction failed: couldn't refresh");
                 System.exit(-1);
             }
         }
-        System.out.println("Extraction failed: too many retries");
+        System.err.println("Extraction failed: too many retries");
         System.exit(-1);
         return null;
     }
